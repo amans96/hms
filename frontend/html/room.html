@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Haven | Our Rooms</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        charcoal: '#18181b',
+                        beige: '#fcfaf8',
+                        gold: '#b45309',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Room Card Styles (Injected by JS) */
+        .room-card {
+            background: white;
+            border: 1px solid #f3f4f6;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #b45309; /* Gold border on hover */
+        }
+
+        .room-card h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #18181b;
+            margin-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            margin-top: auto; /* Pushes button to bottom */
+            border: none;
+            border-radius: 0.5rem;
+            background: #18181b;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .book-btn:hover {
+            background: #b45309; /* Gold */
+            box-shadow: 0 4px 14px 0 rgba(180, 83, 9, 0.39);
+        }
+
+        /* Modal Toggle Logic */
+        .modal {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Status Messages */
+        .booking-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .booking-message.success {
+            display: block;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .booking-message.error {
+            display: block;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+    </style>
+</head>
+
+<body class="bg-beige text-charcoal font-sans antialiased overflow-x-hidden flex flex-col min-h-screen">
+
+    <nav class="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0">
+                    <a href="index.html" class="text-2xl font-light tracking-wide text-charcoal uppercase hover:text-gold transition-colors duration-300">
+                        Grand Haven
+                    </a>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-sm font-medium text-gray-500 hover:text-gold transition-colors">Home</a>
+                    <a href="room.html" class="text-sm font-medium text-charcoal hover:text-gold transition-colors">Rooms</a>
+                    <a href="index.html#food" class="text-sm font-medium text-gray-500 hover:text-gold transition-colors">Dining</a>
+                    <a href="about.html" class="text-sm font-medium text-gray-500 hover:text-gold transition-colors">About</a>
+                    <a href="login.html" class="text-sm font-medium text-gray-500 hover:text-gold transition-colors">Login</a>
+                    <a href="signup.html" class="text-sm font-medium text-gray-500 hover:text-gold transition-colors">Sign Up</a>
+                    <a href="room.html" class="px-5 py-2 bg-charcoal text-white text-sm font-medium rounded-md hover:bg-gold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                        Book Now
+                    </a>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-gray-500 hover:text-charcoal focus:outline-none transition-colors">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-100 absolute w-full shadow-lg origin-top transition-transform duration-300 ease-out">
+            <div class="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+                <a href="index.html" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gold transition-colors">Home</a>
+                <a href="room.html" class="block px-3 py-2 text-base font-medium text-charcoal hover:text-gold transition-colors">Rooms</a>
+                <a href="index.html#food" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gold transition-colors">Dining</a>
+                <a href="about.html" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gold transition-colors">About</a>
+                <a href="login.html" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gold transition-colors">Login</a>
+                <a href="signup.html" class="block px-3 py-2 text-base font-medium text-gray-500 hover:text-gold transition-colors">Sign Up</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="pt-16 pb-8 text-center px-4">
+        <span class="block text-gold font-semibold tracking-widest text-sm uppercase mb-3">Accommodations</span>
+        <h1 class="text-4xl md:text-5xl font-light text-charcoal">Find Your Perfect Room</h1>
+        <p class="mt-4 text-gray-500 max-w-2xl mx-auto">Experience ultimate comfort and luxury tailored to your needs.</p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 flex-grow w-full">
+        <div id="roomContainer" class="room-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+            <div class="col-span-full text-center py-12 text-gray-400 animate-pulse">
+                Loading rooms...
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-charcoal border-t border-gray-800 pt-16 pb-8 text-sm mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                
+                <div>
+                    <a href="index.html" class="text-2xl font-light tracking-wide text-white uppercase mb-4 block">Grand Haven</a>
+                    <p class="text-gray-400 font-light leading-relaxed">
+                        Experience ultimate comfort and luxury tailored to your needs. Your perfect getaway awaits in the heart of the city.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-6 uppercase tracking-wider text-xs">Explore</h4>
+                    <ul class="space-y-3 font-light text-gray-400">
+                        <li><a href="index.html" class="hover:text-gold transition-colors">Home</a></li>
+                        <li><a href="room.html" class="text-gold transition-colors">Rooms & Suites</a></li>
+                        <li><a href="index.html#food" class="hover:text-gold transition-colors">Dining Experience</a></li>
+                        <li><a href="about.html" class="hover:text-gold transition-colors">About Grand Haven</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-6 uppercase tracking-wider text-xs">Contact Us</h4>
+                    <ul class="space-y-3 font-light text-gray-400">
+                        <li>123 Luxury Avenue, Suite 100</li>
+                        <li>Metropolis, NY 10001</li>
+                        <li class="pt-2"><a href="tel:+1234567890" class="hover:text-gold transition-colors">+1 (234) 567-890</a></li>
+                        <li><a href="mailto:info@grandhaven.com" class="hover:text-gold transition-colors">info@grandhaven.com</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-white font-medium mb-6 uppercase tracking-wider text-xs">Newsletter</h4>
+                    <p class="text-gray-400 font-light mb-4">Subscribe for exclusive offers and updates.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Email address" required class="bg-gray-800 text-white px-4 py-2.5 rounded-l-md focus:outline-none focus:ring-1 focus:ring-gold w-full border-none">
+                        <button type="submit" class="bg-gold px-4 py-2.5 rounded-r-md text-white hover:bg-amber-600 transition-colors font-medium">Subscribe</button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500 font-light">
+                <p>&copy; 2026 Grand Haven Hotel. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="bookingModal" class="modal fixed inset-0 z-[100] items-center justify-center bg-charcoal/60 backdrop-blur-sm p-4">
+        
+        <div class="modal-content relative bg-white w-full max-w-md rounded-2xl shadow-2xl p-8 overflow-hidden transform scale-100 transition-transform">
+            
+            <button type="button" id="closeBookingModal" class="close-modal absolute top-4 right-4 text-gray-400 hover:text-charcoal hover:bg-gray-100 p-2 rounded-full transition-colors focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <h2 class="text-2xl font-light text-charcoal mb-6 border-b border-gray-100 pb-4">Make a Reservation</h2>
+
+            <div id="selectedRoom" class="selected-room bg-beige border border-gray-100 rounded-xl p-4 mb-6 text-sm text-gray-600 shadow-inner">
+                Select a room to continue.
+            </div>
+
+            <form id="bookingForm" class="space-y-5">
+                <div class="form-group">
+                    <label for="checkIn" class="block text-sm font-medium text-gray-700 mb-1">
+                        Check-in Date
+                    </label>
+                    <input type="date" id="checkIn" required class="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-gray-700">
+                </div>
+
+                <div class="form-group">
+                    <label for="checkOut" class="block text-sm font-medium text-gray-700 mb-1">
+                        Check-out Date
+                    </label>
+                    <input type="date" id="checkOut" required class="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-gold/50 focus:border-gold outline-none transition-all text-gray-700">
+                </div>
+
+                <button type="submit" id="confirmBookingBtn" class="confirm-btn w-full py-3.5 bg-charcoal text-white font-medium rounded-lg hover:bg-gold shadow-lg hover:shadow-gold/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed mt-2">
+                    Confirm Booking
+                </button>
+            </form>
+
+            <div id="bookingMessage" class="booking-message"></div>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+
+    <script src="../js/rooms.js"></script>
+
+</body>
+</html>

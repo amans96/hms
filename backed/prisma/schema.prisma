@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  WAITER
+}
+
+enum RoomType {
+  SINGLE
+  DOUBLE
+  SUITE
+}
+
+enum RoomStatus {
+  AVAILABLE
+  BOOKED
+  MAINTENANCE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum FoodCategory {
+  BREAKFAST
+  LUNCH
+  DINNER
+  DRINK
+  DESSERT
+}
+
+enum FoodOrderStatus {
+  PENDING
+  PREPARING
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+// ==========================================
+// USER
+// ==========================================
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String?
+  role      UserRole @default(CUSTOMER)
+
+  emailVerified Boolean  @default(false)
+  isActive      Boolean  @default(false)
+
+  verificationToken      String?   @unique
+  verificationTokenExpiry DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings   Booking[]
+  foodOrders FoodOrder[]
+
+  @@map("users")
+}
+
+// ==========================================
+// ROOM
+// ==========================================
+
+model Room {
+  id         String     @id @default(uuid())
+  roomNumber String     @unique
+  type       RoomType
+  price      Decimal    @db.Decimal(10, 2)
+  status     RoomStatus @default(AVAILABLE)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  image       String?
+  bookings Booking[]
+
+  @@map("rooms")
+}
+
+// ==========================================
+// BOOKING
+// ==========================================
+
+model Booking {
+  id         String        @id @default(uuid())
+  userId     String
+  roomId     String
+  checkIn    DateTime
+  checkOut   DateTime
+  totalPrice Decimal       @db.Decimal(10, 2)
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room Room @relation(fields: [roomId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([roomId])
+  @@index([checkIn, checkOut])
+  @@map("bookings")
+}
+
+// ==========================================
+// FOOD
+// ==========================================
+
+model Food {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal      @db.Decimal(10, 2)
+  category    FoodCategory
+  image       String?
+  available   Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  foodOrders FoodOrder[]
+
+  @@map("foods")
+}
+
+// ==========================================
+// FOOD ORDER
+// ==========================================
+
+model FoodOrder {
+  id         String          @id @default(uuid())
+  userId     String
+  foodId     String
+  quantity   Int
+  totalPrice Decimal         @db.Decimal(10, 2)
+  status     FoodOrderStatus @default(PENDING)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  food Food @relation(fields: [foodId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([foodId])
+  @@index([status])
+  @@map("food_orders")
+}

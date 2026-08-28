@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Grand Haven Hotel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        charcoal: '#18181b',
+                        beige: '#fcfaf8',
+                        gold: '#b45309',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- Mobile sidebar backdrop -->
+    <div id="mobileBackdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 hidden lg:hidden" onclick="closeSidebar()"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- LEFT SIDEBAR -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-charcoal text-white transition-transform duration-300 transform -translate-x-full lg:translate-x-0 lg:static lg:flex-shrink-0 flex flex-col">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl font-light tracking-widest text-gold uppercase">Grand Haven</h1>
+                    <span class="text-xs text-gray-400 tracking-wider">HOTEL ADMIN</span>
+                </div>
+                <button id="closeSidebarBtn" class="lg:hidden text-gray-400 hover:text-white" onclick="closeSidebar()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul class="space-y-1 px-3">
+                    <li><a href="#" onclick="switchView('dashboard')" class="flex items-center px-3 py-2.5 hover:bg-gray-800 text-white rounded-md group transition-colors"><svg class="w-5 h-5 mr-3 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>Dashboard</a></li>
+                    <li><a href="#" onclick="switchView('rooms')" class="flex items-center px-3 py-2.5 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors group"><svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>Rooms</a></li>
+                    <li><a href="#" onclick="switchView('reservations')" class="flex items-center px-3 py-2.5 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors group"><svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>Reservations</a></li>
+                    <li><a href="#" onclick="switchView('food-menu')" class="flex items-center px-3 py-2.5 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors group"><svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>Food & Menu</a></li>
+                    <li><a href="#" onclick="switchView('food-orders')" class="flex items-center px-3 py-2.5 text-gray-300 hover:bg-gray-800 hover:text-white rounded-md transition-colors group"><svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>Food Orders</a></li>
+                </ul>
+            </nav>
+
+            <div class="p-4 border-t border-gray-800">
+                <div class="flex items-center mb-4">
+                    <div id="adminAvatar" class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold">
+                        -
+                    </div>
+                    <div class="ml-3 overflow-hidden">
+                        <p class="text-sm font-medium text-white truncate" id="adminNameDisplay">Loading...</p>
+                        <p class="text-xs text-gray-400 truncate" id="adminEmailDisplay">Loading...</p>
+                    </div>
+                </div>
+                <button id="logoutBtn" class="w-full flex items-center justify-center px-4 py-2 bg-gray-800 text-sm text-gray-300 rounded hover:bg-gray-700 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 flex flex-col h-screen overflow-y-auto bg-gray-50">
+            
+            <!-- TOP HEADER -->
+            <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+                <div class="px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <button id="openSidebarBtn" class="mr-4 lg:hidden text-gray-500 hover:text-charcoal focus:outline-none" onclick="openSidebar()">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-800" id="pageTitle">Dashboard</h2>
+                            <p class="text-sm text-gray-500" id="pageSubtitle">Welcome back, Administrator.</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6 max-w-7xl mx-auto w-full">
+                
+                <!-- DASHBOARD VIEW -->
+                <div id="view-dashboard" class="admin-section block space-y-8">
+                    <div id="dashboardError" class="hidden p-4 bg-red-50 text-red-600 border border-red-200 rounded text-sm"></div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm flex items-center">
+                            <div class="p-3 rounded-full bg-gray-50 text-gold mr-4">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-gray-800" id="statTotalRooms">0</p>
+                                <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Rooms</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm flex items-center">
+                            <div class="p-3 rounded-full bg-gray-50 text-green-600 mr-4">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-gray-800" id="statAvailableRooms">0</p>
+                                <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Available Rooms</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm flex items-center">
+                            <div class="p-3 rounded-full bg-gray-50 text-blue-600 mr-4">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-gray-800" id="statTodayBookings">0</p>
+                                <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Today's Bookings</p>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg border border-gray-100 shadow-sm flex items-center">
+                            <div class="p-3 rounded-full bg-gray-50 text-orange-600 mr-4">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="text-3xl font-bold text-gray-800" id="statPendingOrders">0</p>
+                                <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Pending Orders</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section>
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Quick Actions</h3>
+                        <div class="flex flex-wrap gap-4">
+                            <button id="addFoodBtn" class="px-5 py-2.5 bg-gold text-white font-medium rounded shadow-sm hover:bg-amber-800 transition-colors flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> Add Food
+                            </button>
+                            <button onclick="switchView('reservations')" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded shadow-sm hover:bg-gray-50 transition-colors">View Reservations</button>
+                            <button onclick="switchView('rooms')" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded shadow-sm hover:bg-gray-50 transition-colors">Manage Rooms</button>
+                            <button onclick="switchView('food-orders')" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded shadow-sm hover:bg-gray-50 transition-colors">View Food Orders</button>
+                        </div>
+                    </section>
+
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <section class="lg:col-span-1 bg-white border border-gray-100 rounded-lg shadow-sm p-6">
+                            <h3 class="text-lg font-medium text-gray-800 mb-4">Room Status</h3>
+                            <div class="space-y-4" id="roomStatusContainer">
+                                <p class="text-sm text-gray-500 text-center py-4">Loading room status...</p>
+                            </div>
+                        </section>
+
+                        <section class="lg:col-span-2 bg-white border border-gray-100 rounded-lg shadow-sm p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-medium text-gray-800">Recent Food Orders</h3>
+                                <button onclick="switchView('food-orders')" class="text-sm text-gold hover:text-amber-800 font-medium">View All</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                    <thead>
+                                        <tr class="text-gray-500 uppercase tracking-wider text-xs">
+                                            <th class="py-3 px-2 font-medium">Order ID</th>
+                                            <th class="py-3 px-2 font-medium">Customer</th>
+                                            <th class="py-3 px-2 font-medium">Food</th>
+                                            <th class="py-3 px-2 font-medium">Qty</th>
+                                            <th class="py-3 px-2 font-medium">Total</th>
+                                            <th class="py-3 px-2 font-medium">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100" id="ordersTableBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center py-6 text-gray-500">Loading orders...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- ROOMS VIEW -->
+                <div id="view-rooms" class="admin-section hidden space-y-8">
+                    <section class="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-medium text-gray-800">Room Management</h3>
+                            <button id="addRoomBtn" class="px-4 py-2 bg-charcoal text-white text-sm font-medium rounded hover:bg-gray-800 transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Add Room
+                            </button>
+                        </div>
+                        <div id="roomError" class="hidden p-4 mb-4 bg-red-50 text-red-600 border border-red-200 rounded text-sm"></div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                <thead>
+                                    <tr class="text-gray-500 uppercase tracking-wider text-xs">
+                                        <th class="py-3 px-4 font-medium w-16">Image</th>
+                                        <th class="py-3 px-4 font-medium">Room Number</th>
+                                        <th class="py-3 px-4 font-medium">Type</th>
+                                        <th class="py-3 px-4 font-medium">Price</th>
+                                        <th class="py-3 px-4 font-medium">Status</th>
+                                        <th class="py-3 px-4 font-medium text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100" id="roomsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-8 text-gray-500">Loading rooms...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- RESERVATIONS VIEW -->
+                <div id="view-reservations" class="admin-section hidden space-y-8">
+                    <section class="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-gray-800">All Reservations</h3>
+                        </div>
+                        <div id="bookingError" class="hidden mx-6 mt-4 p-4 bg-red-50 text-red-600 border border-red-200 rounded text-sm"></div>
+                        <div class="overflow-x-auto p-6 pt-0">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                <thead>
+                                    <tr class="text-gray-500 uppercase tracking-wider text-xs">
+                                        <th class="py-3 px-4 font-medium">Guest</th>
+                                        <th class="py-3 px-4 font-medium">Email</th>
+                                        <th class="py-3 px-4 font-medium">Room</th>
+                                        <th class="py-3 px-4 font-medium">Check In</th>
+                                        <th class="py-3 px-4 font-medium">Check Out</th>
+                                        <th class="py-3 px-4 font-medium">Total</th>
+                                        <th class="py-3 px-4 font-medium">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100" id="reservationsTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-8 text-gray-500">Loading reservations...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FOOD & MENU VIEW -->
+                <div id="view-food-menu" class="admin-section hidden space-y-8">
+                    <section class="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 class="text-lg font-medium text-gray-800">Food & Menu</h3>
+                                <p class="text-sm text-gray-500 mt-1">Manage restaurant offerings.</p>
+                            </div>
+                            <button id="addMenuBtn" class="px-4 py-2 bg-charcoal text-white text-sm font-medium rounded hover:bg-gray-800 transition-colors flex items-center">
+                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> Add Food
+                            </button>
+                        </div>
+                        <div id="foodError" class="hidden mx-6 mt-4 p-4 bg-red-50 text-red-600 border border-red-200 rounded text-sm"></div>
+                        <div class="overflow-x-auto p-6 pt-0">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                <thead>
+                                    <tr class="text-gray-500 uppercase tracking-wider text-xs">
+                                        <th class="py-3 px-4 font-medium w-16">Image</th>
+                                        <th class="py-3 px-4 font-medium">Food Name</th>
+                                        <th class="py-3 px-4 font-medium">Category</th>
+                                        <th class="py-3 px-4 font-medium">Price</th>
+                                        <th class="py-3 px-4 font-medium">Availability</th>
+                                        <th class="py-3 px-4 font-medium text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100" id="foodTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-8 text-gray-500">Loading menu...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- FOOD ORDERS VIEW -->
+                <div id="view-food-orders" class="admin-section hidden space-y-8">
+                    <section class="bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                            <h3 class="text-lg font-medium text-gray-800">All Food Orders</h3>
+                        </div>
+                        <div id="foodOrderError" class="hidden mx-6 mt-4 p-4 bg-red-50 text-red-600 border border-red-200 rounded text-sm"></div>
+                        <div class="overflow-x-auto p-6 pt-0">
+                            <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
+                                <thead>
+                                    <tr class="text-gray-500 uppercase tracking-wider text-xs">
+                                        <th class="py-3 px-4 font-medium">Order ID</th>
+                                        <th class="py-3 px-4 font-medium">Customer</th>
+                                        <th class="py-3 px-4 font-medium">Food</th>
+                                        <th class="py-3 px-4 font-medium">Quantity</th>
+                                        <th class="py-3 px-4 font-medium">Total</th>
+                                        <th class="py-3 px-4 font-medium">Date</th>
+                                        <th class="py-3 px-4 font-medium">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100" id="foodOrdersTableBody">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-8 text-gray-500">Loading food orders...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Room Modal with Image Upload -->
+    <div id="roomModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-gray-900 bg-opacity-50" id="roomModalBackdrop"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-800" id="roomModalTitle">Add Room</h3>
+                <button id="closeRoomModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <form id="roomForm" class="space-y-4" enctype="multipart/form-data">
+                    <input type="hidden" id="roomId" value="">
+                    
+                    <!-- Current Image Preview -->
+                    <div id="roomImagePreviewContainer" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Image</label>
+                        <img id="roomImagePreview" src="" alt="Room Image" class="w-24 h-24 rounded object-cover border border-gray-200">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Room Number <span class="text-red-500">*</span></label>
+                        <input type="text" id="roomNumber" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Room Type <span class="text-red-500">*</span></label>
+                        <select id="roomType" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm bg-white">
+                             <option value="SINGLE">Single</option>
+    <option value="DOUBLE">Double</option>
+    <option value="SUITE">Suite</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Price (ETB) <span class="text-red-500">*</span></label>
+                        <input type="number" step="0.01" id="roomPrice" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="roomStatus" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm bg-white">
+                            <option value="AVAILABLE">Available</option>
+                            <option value="BOOKED   ">Occupied</option>
+                            <option value="RESERVED">MAINTENANCE</option>
+                            
+                          
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Room Image</label>
+                        <input type="file" id="roomImage" accept="image/png,image/jpeg,image/webp" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-charcoal hover:file:bg-gray-100 cursor-pointer">
+                        <p class="text-xs text-gray-500 mt-1">Upload a new image (optional). Leave empty to keep existing image.</p>
+                    </div>
+                </form>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3">
+                <button type="button" id="cancelRoomModalBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="submit" form="roomForm" class="px-4 py-2 bg-charcoal text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors" id="roomSubmitBtn">Add Room</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Food Modal -->
+    <div id="foodModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-gray-900 bg-opacity-50" id="foodModalBackdrop"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 relative z-10 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-medium text-gray-800" id="foodModalTitle">Add Food</h3>
+                <button id="closeFoodModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <form id="foodForm" class="space-y-4" enctype="multipart/form-data">
+                    <input type="hidden" id="foodId" value="">
+                    
+                    <!-- Current Image Preview -->
+                    <div id="foodImagePreviewContainer" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Image</label>
+                        <img id="foodImagePreview" src="" alt="Food Image" class="w-24 h-24 rounded object-cover border border-gray-200">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Food Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="foodName" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea id="foodDesc" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Price (ETB) <span class="text-red-500">*</span></label>
+                            <input type="number" step="0.01" id="foodPrice" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Category <span class="text-red-500">*</span></label>
+                            <select id="foodCategory" required class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm bg-white">
+                                <option value="BREAKFAST">BREAKFAST</option>
+                                <option value="LUNCH">LUNCH</option>
+                                <option value="DINNER">DINNER</option>
+                                <option value="DRINK">DRINK</option>
+                                <option value="SNACK">SNACK</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Food Image</label>
+                        <input type="file" id="foodImage" accept="image/png,image/jpeg,image/webp" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gold focus:border-gold text-sm file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-medium file:bg-gray-50 file:text-charcoal hover:file:bg-gray-100 cursor-pointer">
+                        <p class="text-xs text-gray-500 mt-1">Upload a new image (optional). Leave empty to keep existing image.</p>
+                    </div>
+                    <div class="flex items-center mt-2">
+                        <input type="checkbox" id="foodAvailable" checked class="w-4 h-4 text-gold focus:ring-gold border-gray-300 rounded">
+                        <label for="foodAvailable" class="ml-2 block text-sm text-gray-900">Available for Order</label>
+                    </div>
+                </form>
+            </div>
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3">
+                <button type="button" id="cancelFoodModalBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+                <button type="submit" form="foodForm" class="px-4 py-2 bg-charcoal text-white rounded text-sm font-medium hover:bg-gray-800 transition-colors" id="foodSubmitBtn">Add Food</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center">
+        <div class="absolute inset-0 bg-gray-900 bg-opacity-50" id="deleteModalBackdrop"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm mx-4 relative z-10 p-6 text-center">
+            <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Confirm Deletion</h3>
+            <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete this item? This action cannot be undone.</p>
+            <div class="flex justify-center space-x-3">
+                <button id="cancelDeleteBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded text-sm font-medium hover:bg-gray-50 transition-colors">Cancel</button>
+                <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded text-sm font-medium hover:bg-red-700 transition-colors">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-[200] flex flex-col gap-2"></div>
+
+    <script>
+        function switchView(viewName) {
+            document.querySelectorAll('.admin-section').forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('block');
+            });
+            const activeSection = document.getElementById(`view-${viewName}`);
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+                activeSection.classList.add('block');
+            }
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard',
+                'rooms': 'Room Management',
+                'reservations': 'Reservations',
+                'food-menu': 'Food & Menu',
+                'food-orders': 'Food Orders'
+            };
+            document.getElementById('pageTitle').textContent = titles[viewName] || 'Dashboard';
+            closeSidebar();
+        }
+
+        function openSidebar() {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+            document.getElementById('mobileBackdrop').classList.remove('hidden');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('mobileBackdrop').classList.add('hidden');
+        }
+    </script>
+    
+    <script src="../js/api.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html>
